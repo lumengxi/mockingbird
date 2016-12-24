@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"database/sql"
 	"encoding/json"
 	"github.com/satori/go.uuid"
 	"github.com/gorilla/mux"
@@ -17,7 +16,6 @@ import (
 
 
 var (
-	db *sql.DB
 	mockers = []models.Mocker{}
 )
 
@@ -56,10 +54,10 @@ func init() {
 	mockingbird.InitDatabase("postgres://postgres:postgres@localhost/mockingbird?sslmode=disable")
 }
 
-	func main() {
-		router := mux.NewRouter()
+func main() {
+	router := mux.NewRouter()
 
-		// Routes
+	// Routes
 	router.HandleFunc("/", getHome).Methods("GET")
 	router.HandleFunc("/mockers", getMockers).Methods("GET")
 	router.HandleFunc("/mockers", makeMocker).Methods("POST")
