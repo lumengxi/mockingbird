@@ -1,11 +1,11 @@
 package mockingbird
 
 import (
-	log "github.com/Sirupsen/logrus"
 	"database/sql"
 	"fmt"
-	"time"
+	log "github.com/Sirupsen/logrus"
 	"os"
+	"time"
 )
 
 func InitLogger() {

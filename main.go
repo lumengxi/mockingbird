@@ -1,17 +1,16 @@
 package main
 
 import (
-	"net/http"
 	"encoding/json"
-	"github.com/satori/go.uuid"
-	"github.com/gorilla/mux"
-	"github.com/urfave/negroni"
-	"github.com/meatballhat/negroni-logrus"
-	_ "github.com/lib/pq"
 	log "github.com/Sirupsen/logrus"
-
-	"github.com/lumengxi/mockingbird/mockingbird/models"
+	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 	"github.com/lumengxi/mockingbird/mockingbird"
+	"github.com/lumengxi/mockingbird/mockingbird/models"
+	"github.com/meatballhat/negroni-logrus"
+	"github.com/satori/go.uuid"
+	"github.com/urfave/negroni"
+	"net/http"
 )
 
 
