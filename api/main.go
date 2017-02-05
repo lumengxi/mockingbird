@@ -24,7 +24,7 @@ func main() {
 	router.HandleFunc("/", GetHome).Methods("GET")
 	router.HandleFunc("/mockers", GetMockers).Methods("GET")
 	router.HandleFunc("/mocker", MakeMocker).Methods("POST")
-	router.HandleFunc("/mockers/{id}", GetMocker).Methods("GET")
+	router.HandleFunc("/mockers?id={id}", GetMocker).Methods("GET")
 
 	n := negroni.New()
 	n.Use(negronilogrus.NewCustomMiddleware(log.DebugLevel, &log.JSONFormatter{}, "mockingbird"))

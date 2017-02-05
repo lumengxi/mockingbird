@@ -2,46 +2,68 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
+	"fmt"
+	log "github.com/Sirupsen/logrus"
 	"github.com/satori/go.uuid"
 	"net/http"
+	"strconv"
 )
 
 var (
 	mockers = []Mocker{}
 )
 
-func GetHome(w http.ResponseWriter, req *http.Request) {
+func GetHome(w http.ResponseWriter, req *http.Request) error {
 	json.NewEncoder(w).Encode("Get some mockers!")
 }
 
-func MakeMocker(w http.ResponseWriter, req *http.Request) {
+func MakeMocker(w http.ResponseWriter, req *http.Request) error {
 	var mocker Mocker
 	_ = json.NewDecoder(req.Body).Decode(&mocker)
 	mocker.ID = uuid.NewV4().String()
 	mocker.Status = true
 	mockers = append(mockers, mocker)
 
-	json.NewEncoder(w).Encode(mockers)
+	return json.NewEncoder(w).Encode(mockers)
 }
 
 
-func GetMocker(w http.ResponseWriter, req *http.Request) {
-	params := mux.Vars(req)
+func GetMocker(w http.ResponseWriter, req *http.Request) error {
+	mockerId := req.URL.Query().Get("id")
 
-	for _, item := range mockers {
-		if item.ID == params["id"] {
-			json.NewEncoder(w).Encode(item)
-			return
+	for _, mocker := range mockers {
+		if mocker.ID == mockerId {
+			json.NewEncoder(w).Encode(mocker)
+		} else {
+			returnErr := fmt.Errorf("Cannot find requested mockerId: %d", mocker.ID)
+			return StatusError{500, returnErr}
 		}
 	}
-	json.NewEncoder(w).Encode(&Mocker{})
+	return json.NewEncoder(w).Encode(&Mocker{})
 }
 
-func GetMockers(w http.ResponseWriter, req *http.Request) {
-	json.NewEncoder(w).Encode(mockers)
+func GetMockers(w http.ResponseWriter, req *http.Request) error {
+	return json.NewEncoder(w).Encode(mockers)
 }
 
-func DisableMocker(w http.ResponseWriter, req *http.Request) {
 
+func SetMockerStatus(w http.ResponseWriter, req *http.Request) error {
+	mockerId := req.URL.Query().Get("id")
+	mockerStatusParam := req.URL.Query().Get("status")
+
+	targetStatus, err := strconv.ParseBool(mockerStatusParam)
+	if err != nil {
+		returnErr := fmt.Errorf("Cannot parse mocker status input to bool: %s", mockerStatusParam)
+		log.Error(returnErr)
+		return StatusError{500, returnErr}
+	}
+
+	for _, mocker := range mockers {
+		if mocker.ID == mockerId {
+			log.Info("Set mocker [%d] status from %s to %s", mocker.ID, mocker.Status, targetStatus)
+			mocker.Status = targetStatus
+		}
+	}
+
+	return json.NewEncoder(w).Encode(&Mocker{})
 }
