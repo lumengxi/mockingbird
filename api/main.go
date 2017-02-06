@@ -24,9 +24,9 @@ func main() {
 
 	// Routes
 	router.Handle("/", HandlerWithError{GetHomeHandler}).Methods("GET")
-	router.Handle("/mockers", HandlerWithError{GetMockers}).Methods("GET")
+	router.Handle("/mockers", HandlerWithError{GetMockerConfigsHandler}).Methods("GET")
 	router.Handle("/mocker", HandlerWithError{MakeMockerHandler}).Methods("POST")
-	router.Handle("/mockers?id={id}", HandlerWithError{GetMockerHandler}).Methods("GET")
+	router.Handle("/mockers?id={id}", HandlerWithError{GetMockerConfigHandler}).Methods("GET")
 
 	n := negroni.New()
 	n.Use(negronilogrus.NewCustomMiddleware(log.DebugLevel, &log.JSONFormatter{}, "mockingbird"))

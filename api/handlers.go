@@ -28,7 +28,7 @@ func MakeMockerHandler(w http.ResponseWriter, req *http.Request) error {
 }
 
 
-func GetMockerHandler(w http.ResponseWriter, req *http.Request) error {
+func GetMockerConfigHandler(w http.ResponseWriter, req *http.Request) error {
 	mockerId := req.URL.Query().Get("id")
 
 	for _, mocker := range mockers {
@@ -42,7 +42,7 @@ func GetMockerHandler(w http.ResponseWriter, req *http.Request) error {
 	return json.NewEncoder(w).Encode(&Mocker{})
 }
 
-func GetMockers(w http.ResponseWriter, req *http.Request) error {
+func GetMockerConfigsHandler(w http.ResponseWriter, req *http.Request) error {
 	return json.NewEncoder(w).Encode(mockers)
 }
 
@@ -67,3 +67,5 @@ func SetMockerStatusHandler(w http.ResponseWriter, req *http.Request) error {
 
 	return json.NewEncoder(w).Encode(&Mocker{})
 }
+
+
