@@ -20,18 +20,13 @@ func init() {
 
 func main() {
 
-	env := &Env{
-		Port: os.Getenv("PORT"),
-		Host: os.Getenv("HOST"),
-	}
-
 	router := mux.NewRouter()
 
 	// Routes
-	router.Handle("/", HandlerMixin{env, GetHomeHandler}).Methods("GET")
-	router.Handle("/mockers", HandlerMixin{env, GetMockers}).Methods("GET")
-	router.Handle("/mocker", HandlerMixin{env, MakeMockerHandler}).Methods("POST")
-	router.Handle("/mockers?id={id}", HandlerMixin{env, GetMockerHandler}).Methods("GET")
+	router.Handle("/", HandlerWithError{GetHomeHandler}).Methods("GET")
+	router.Handle("/mockers", HandlerWithError{GetMockers}).Methods("GET")
+	router.Handle("/mocker", HandlerWithError{MakeMockerHandler}).Methods("POST")
+	router.Handle("/mockers?id={id}", HandlerWithError{GetMockerHandler}).Methods("GET")
 
 	n := negroni.New()
 	n.Use(negronilogrus.NewCustomMiddleware(log.DebugLevel, &log.JSONFormatter{}, "mockingbird"))

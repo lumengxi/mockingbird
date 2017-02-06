@@ -28,19 +28,11 @@ func (se StatusError) Status() int {
 	return se.Code
 }
 
-type Env struct {
-	Host string
-	Port string
-	Logger log.Logger
-}
-
-
-type HandlerMixin struct {
-	*Env
+type HandlerWithError struct {
 	H func(w http.ResponseWriter, req *http.Request) error
 }
 
-func (h HandlerMixin) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (h HandlerWithError) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	err := h.H(w, req)
 	if err != nil {
 		switch e := err.(type) {
