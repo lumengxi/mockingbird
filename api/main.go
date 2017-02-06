@@ -7,6 +7,7 @@ import (
 	"github.com/meatballhat/negroni-logrus"
 	"github.com/urfave/negroni"
 	"net/http"
+	"os"
 )
 
 
@@ -18,13 +19,19 @@ func init() {
 // curl -X POST -d '{"name":"test", "config":{"body":"hello world!"}}' localhost:1234/mocker
 
 func main() {
+
+	env := &Env{
+		Port: os.Getenv("PORT"),
+		Host: os.Getenv("HOST"),
+	}
+
 	router := mux.NewRouter()
 
 	// Routes
-	router.HandleFunc("/", GetHome).Methods("GET")
-	router.HandleFunc("/mockers", GetMockers).Methods("GET")
-	router.HandleFunc("/mocker", MakeMocker).Methods("POST")
-	router.HandleFunc("/mockers?id={id}", GetMocker).Methods("GET")
+	router.Handle("/", HandlerMixin{env, GetHomeHandler}).Methods("GET")
+	router.Handle("/mockers", HandlerMixin{env, GetMockers}).Methods("GET")
+	router.Handle("/mocker", HandlerMixin{env, MakeMockerHandler}).Methods("POST")
+	router.Handle("/mockers?id={id}", HandlerMixin{env, GetMockerHandler}).Methods("GET")
 
 	n := negroni.New()
 	n.Use(negronilogrus.NewCustomMiddleware(log.DebugLevel, &log.JSONFormatter{}, "mockingbird"))
@@ -32,5 +39,5 @@ func main() {
 	n.UseHandler(router)
 
 	log.Info("Starting Mockingbird server...")
-	http.ListenAndServe(":1234", n)
+	log.Fatal(http.ListenAndServe(":1234", n))
 }

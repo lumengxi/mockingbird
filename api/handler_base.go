@@ -28,11 +28,19 @@ func (se StatusError) Status() int {
 	return se.Code
 }
 
-type Handler struct {
+type Env struct {
+	Host string
+	Port string
+	Logger log.Logger
+}
+
+
+type HandlerMixin struct {
+	*Env
 	H func(w http.ResponseWriter, req *http.Request) error
 }
 
-func (h Handler) ServeHttp(w http.ResponseWriter, req *http.Request) {
+func (h HandlerMixin) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	err := h.H(w, req)
 	if err != nil {
 		switch e := err.(type) {
@@ -46,8 +54,8 @@ func (h Handler) ServeHttp(w http.ResponseWriter, req *http.Request) {
 			// to serving a HTTP 500
 			log.Info("Unknown Http error: 500 - %s", e)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		
+
 		}
 	}
-	
+
 }

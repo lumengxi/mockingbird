@@ -13,11 +13,11 @@ var (
 	mockers = []Mocker{}
 )
 
-func GetHome(w http.ResponseWriter, req *http.Request) error {
-	json.NewEncoder(w).Encode("Get some mockers!")
+func GetHomeHandler(w http.ResponseWriter, req *http.Request) error {
+	return json.NewEncoder(w).Encode("Get some mockers!")
 }
 
-func MakeMocker(w http.ResponseWriter, req *http.Request) error {
+func MakeMockerHandler(w http.ResponseWriter, req *http.Request) error {
 	var mocker Mocker
 	_ = json.NewDecoder(req.Body).Decode(&mocker)
 	mocker.ID = uuid.NewV4().String()
@@ -28,7 +28,7 @@ func MakeMocker(w http.ResponseWriter, req *http.Request) error {
 }
 
 
-func GetMocker(w http.ResponseWriter, req *http.Request) error {
+func GetMockerHandler(w http.ResponseWriter, req *http.Request) error {
 	mockerId := req.URL.Query().Get("id")
 
 	for _, mocker := range mockers {
@@ -47,7 +47,7 @@ func GetMockers(w http.ResponseWriter, req *http.Request) error {
 }
 
 
-func SetMockerStatus(w http.ResponseWriter, req *http.Request) error {
+func SetMockerStatusHandler(w http.ResponseWriter, req *http.Request) error {
 	mockerId := req.URL.Query().Get("id")
 	mockerStatusParam := req.URL.Query().Get("status")
 
