@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	log "github.com/Sirupsen/logrus"
@@ -34,20 +34,20 @@ type HandlerWithError struct {
 
 func (h HandlerWithError) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	err := h.H(w, req)
+
 	if err != nil {
 		switch e := err.(type) {
 		case Error:
 			// We can retrieve the status here and write out a specific
 			// HTTP status code.
-			log.Info("Http error: %d - %s", e.Status(), e)
+			log.Errorf("Http error: %d - %s", e.Status(), e)
 			http.Error(w, e.Error(), e.Status())
 		default:
 			// Any error types we don't specifically look out for default
 			// to serving a HTTP 500
-			log.Info("Unknown Http error: 500 - %s", e)
+			log.Errorf("Unknown Http error: 500 - %s", e)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 
 		}
 	}
-
 }

@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"bytes"
@@ -38,8 +38,9 @@ func GetMockerConfigHandler(w http.ResponseWriter, req *http.Request) error {
 		if mocker.ID == mockerId {
 			return json.NewEncoder(w).Encode(mocker)
 		} else {
-			returnErr := fmt.Errorf("Cannot find requested mockerId: %d", mocker.ID)
-			return StatusError{500, returnErr}
+			return StatusError{500,
+				fmt.Errorf("Cannot find requested mockerId: %d", mocker.ID),
+			}
 		}
 	}
 
@@ -57,9 +58,10 @@ func SetMockerStatusHandler(w http.ResponseWriter, req *http.Request) error {
 
 	targetStatus, err := strconv.ParseBool(mockerStatusParam)
 	if err != nil {
-		returnErr := fmt.Errorf("Cannot parse mocker status input to bool: %s", mockerStatusParam)
-		log.Error(returnErr)
-		return StatusError{500, returnErr}
+		return StatusError{
+			500,
+			fmt.Errorf("Cannot parse mocker status input to bool: %s", mockerStatusParam),
+		}
 	}
 
 	for _, mocker := range mockers {
@@ -90,8 +92,10 @@ func GetMockerHandler(w http.ResponseWriter, req *http.Request) error {
 		if mocker.ID == mockerId {
 			resp = makeMockerResponse(mocker.MockerConfig)
 		} else {
-			returnErr := fmt.Errorf("Cannot find mocker by Id: %d", mockerId)
-			return StatusError{500, returnErr}
+			return StatusError{
+				500,
+				fmt.Errorf("Cannot find mocker by Id: %d", mockerId),
+			}
 		}
 	}
 
