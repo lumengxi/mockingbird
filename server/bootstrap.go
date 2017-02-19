@@ -8,13 +8,14 @@ import (
 	"time"
 )
 
+// InitLogger configures logger
 func InitLogger() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetOutput(os.Stderr)
 	log.SetLevel(log.DebugLevel)
 }
 
-
+// InitDatabase starts database with healthcheck
 func InitDatabase(address string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", address)
 	if err != nil {
@@ -25,7 +26,7 @@ func InitDatabase(address string) (*sql.DB, error) {
 		cancel := time.NewTimer(5 * time.Second)
 		attempts := 1
 
-		PingLoop:
+	PingLoop:
 		for {
 			select {
 			case <-time.After(1 * time.Second):
