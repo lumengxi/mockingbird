@@ -15,7 +15,7 @@ type Error interface {
 // StatusError represents an error with an associated HTTP status code.
 type StatusError struct {
 	Code int
-	Err error
+	Err  error
 }
 
 // Allows StatusError to satisfy the error interface.

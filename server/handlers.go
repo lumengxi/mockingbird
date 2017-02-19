@@ -30,7 +30,6 @@ func MakeMockerHandler(w http.ResponseWriter, req *http.Request) error {
 	return json.NewEncoder(w).Encode(mockers)
 }
 
-
 func GetMockerConfigHandler(w http.ResponseWriter, req *http.Request) error {
 	mockerId := req.URL.Query().Get(":id")
 
@@ -40,14 +39,12 @@ func GetMockerConfigHandler(w http.ResponseWriter, req *http.Request) error {
 		}
 	}
 
-	return StatusError{500,fmt.Errorf("Cannot find requested mockerId: %d", mockerId)}
+	return StatusError{500, fmt.Errorf("Cannot find requested mockerId: %d", mockerId)}
 }
-
 
 func GetMockerConfigsHandler(w http.ResponseWriter, req *http.Request) error {
 	return json.NewEncoder(w).Encode(mockers)
 }
-
 
 func SetMockerStatusHandler(w http.ResponseWriter, req *http.Request) error {
 	mockerId := req.URL.Query().Get(":id")
@@ -55,7 +52,7 @@ func SetMockerStatusHandler(w http.ResponseWriter, req *http.Request) error {
 
 	targetStatus, err := strconv.ParseBool(mockerStatusParam)
 	if err != nil {
-		return StatusError{500,fmt.Errorf("Cannot parse mocker status input to bool: %s", mockerStatusParam)}
+		return StatusError{500, fmt.Errorf("Cannot parse mocker status input to bool: %s", mockerStatusParam)}
 	}
 
 	for _, mocker := range mockers {
@@ -68,15 +65,13 @@ func SetMockerStatusHandler(w http.ResponseWriter, req *http.Request) error {
 	return json.NewEncoder(w).Encode(&Mocker{})
 }
 
-
 func makeMockerResponse(mockerConfig MockerConfig) http.Response {
 	return http.Response{
-		Header: mockerConfig.MakeHeaders(),
+		Header:     mockerConfig.MakeHeaders(),
 		StatusCode: mockerConfig.StatusCode,
-		Body: ioutil.NopCloser(bytes.NewBufferString(mockerConfig.Body)),
+		Body:       ioutil.NopCloser(bytes.NewBufferString(mockerConfig.Body)),
 	}
 }
-
 
 func GetMockerHandler(w http.ResponseWriter, req *http.Request) error {
 	mockerId := req.URL.Query().Get(":id")
@@ -88,9 +83,8 @@ func GetMockerHandler(w http.ResponseWriter, req *http.Request) error {
 		}
 	}
 
-	return StatusError{500,fmt.Errorf("Cannot find mocker by Id: %d", mockerId)}
+	return StatusError{500, fmt.Errorf("Cannot find mocker by Id: %d", mockerId)}
 }
-
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)

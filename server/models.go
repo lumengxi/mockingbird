@@ -5,18 +5,17 @@ import (
 )
 
 type MockerConfig struct {
-	StatusCode   int `json:"status_code"`
-	ContentType  string `json:"content_type"`
-	Charset      string `json:"charset"`
-	Body         string `json:"body"`
+	StatusCode   int               `json:"status_code"`
+	ContentType  string            `json:"content_type"`
+	Charset      string            `json:"charset"`
+	Body         string            `json:"body"`
 	ExtraHeaders map[string]string `json:"headers"`
 }
 
-
 type Mocker struct {
-	ID string `json:"uuid"`
-	Status bool `json:"status"`
-	Name string `json:"name"`
+	ID           string       `json:"uuid"`
+	Status       bool         `json:"status"`
+	Name         string       `json:"name"`
 	MockerConfig MockerConfig `json:"config"`
 }
 

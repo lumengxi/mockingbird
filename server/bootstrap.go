@@ -14,7 +14,6 @@ func InitLogger() {
 	log.SetLevel(log.DebugLevel)
 }
 
-
 func InitDatabase(address string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", address)
 	if err != nil {
@@ -25,7 +24,7 @@ func InitDatabase(address string) (*sql.DB, error) {
 		cancel := time.NewTimer(5 * time.Second)
 		attempts := 1
 
-		PingLoop:
+	PingLoop:
 		for {
 			select {
 			case <-time.After(1 * time.Second):
