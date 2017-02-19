@@ -34,5 +34,5 @@ func main() {
 	n.UseHandler(router)
 
 	log.Info("Starting Mockingbird server...")
-	log.Fatal(http.ListenAndServe(":1234", n))
+	log.Fatal(http.ListenAndServe(":8888", n))
 }
