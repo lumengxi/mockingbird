@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// MockerConfig struct
 type MockerConfig struct {
 	StatusCode   int               `json:"status_code"`
 	ContentType  string            `json:"content_type"`
@@ -12,6 +13,7 @@ type MockerConfig struct {
 	ExtraHeaders map[string]string `json:"headers"`
 }
 
+// Mocker struct
 type Mocker struct {
 	ID           string       `json:"uuid"`
 	Status       bool         `json:"status"`
@@ -19,6 +21,7 @@ type Mocker struct {
 	MockerConfig MockerConfig `json:"config"`
 }
 
+// MakeHeaders creates a `http.Header` based on mocker config
 func (m *MockerConfig) MakeHeaders() http.Header {
 
 	if m.ExtraHeaders == nil {

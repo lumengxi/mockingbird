@@ -16,10 +16,12 @@ var (
 	mockers = []Mocker{}
 )
 
+// GetHomeHandler renders a simple homepage
 func GetHomeHandler(w http.ResponseWriter, req *http.Request) error {
 	return json.NewEncoder(w).Encode("Get some mockers!")
 }
 
+// MakeMockerHandler creates an active `Mocker`
 func MakeMockerHandler(w http.ResponseWriter, req *http.Request) error {
 	var mocker Mocker
 	_ = json.NewDecoder(req.Body).Decode(&mocker)
@@ -30,22 +32,25 @@ func MakeMockerHandler(w http.ResponseWriter, req *http.Request) error {
 	return json.NewEncoder(w).Encode(mockers)
 }
 
+// GetMockerConfigHandler returns mocker config by id
 func GetMockerConfigHandler(w http.ResponseWriter, req *http.Request) error {
-	mockerId := req.URL.Query().Get(":id")
+	mockerID := req.URL.Query().Get(":id")
 
 	for _, mocker := range mockers {
-		if mocker.ID == mockerId {
+		if mocker.ID == mockerID {
 			return json.NewEncoder(w).Encode(mocker)
 		}
 	}
 
-	return StatusError{500, fmt.Errorf("Cannot find requested mockerId: %d", mockerId)}
+	return StatusError{500, fmt.Errorf("Cannot find requested mockerID: %d", mockerID)}
 }
 
+// GetMockerConfigsHandler returns all mockers' configs
 func GetMockerConfigsHandler(w http.ResponseWriter, req *http.Request) error {
 	return json.NewEncoder(w).Encode(mockers)
 }
 
+// SetMockerStatusHandler modifies a mocker status
 func SetMockerStatusHandler(w http.ResponseWriter, req *http.Request) error {
 	mockerId := req.URL.Query().Get(":id")
 	mockerStatusParam := req.URL.Query().Get("status")
@@ -65,6 +70,7 @@ func SetMockerStatusHandler(w http.ResponseWriter, req *http.Request) error {
 	return json.NewEncoder(w).Encode(&Mocker{})
 }
 
+// makeMockerResponse creates a `http.Response` based on mocker config
 func makeMockerResponse(mockerConfig MockerConfig) http.Response {
 	return http.Response{
 		Header:     mockerConfig.MakeHeaders(),
@@ -73,19 +79,21 @@ func makeMockerResponse(mockerConfig MockerConfig) http.Response {
 	}
 }
 
+// GetMockerHandler renders a mocker-configured HTTP response
 func GetMockerHandler(w http.ResponseWriter, req *http.Request) error {
-	mockerId := req.URL.Query().Get(":id")
+	mockerID := req.URL.Query().Get(":id")
 
 	for _, mocker := range mockers {
-		if mocker.ID == mockerId {
+		if mocker.ID == mockerID {
 			resp := makeMockerResponse(mocker.MockerConfig)
 			return resp.Write(w)
 		}
 	}
 
-	return StatusError{500, fmt.Errorf("Cannot find mocker by Id: %d", mockerId)}
+	return StatusError{500, fmt.Errorf("Cannot find mocker by Id: %d", mockerID)}
 }
 
+// HealthCheckHandler setups basic application healthcheck
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
