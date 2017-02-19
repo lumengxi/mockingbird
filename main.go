@@ -12,6 +12,7 @@ import (
 
 
 func init() {
+	server.InitLogger()
 	server.InitDatabase("postgres://postgres:postgres@localhost/mockingbird?sslmode=disable")
 }
 

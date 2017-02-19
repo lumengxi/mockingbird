@@ -4,8 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 	log "github.com/Sirupsen/logrus"
+	"os"
 	"time"
 )
+
+func InitLogger() {
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetOutput(os.Stderr)
+	log.SetLevel(log.DebugLevel)
+}
 
 
 func InitDatabase(address string) (*sql.DB, error) {
