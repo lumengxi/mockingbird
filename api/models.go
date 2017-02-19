@@ -1,13 +1,13 @@
 package main
 
 import (
-	"strings"
+	"net/http"
 )
 
 type MockerConfig struct {
-	ContentType  string `json:"contentType"`
+	StatusCode   int `json:"status_code"`
+	ContentType  string `json:"content_type"`
 	Charset      string `json:"charset"`
-	Location     string `json:"location"`
 	Body         string `json:"body"`
 	ExtraHeaders map[string]string `json:"headers"`
 }
@@ -20,9 +20,26 @@ type Mocker struct {
 	MockerConfig MockerConfig `json:"config"`
 }
 
-func (m *MockerConfig) MakeHeaders() (map[string]string) {
-	m.ExtraHeaders["Content-Type"] = m.ContentType + "; charset=" + strings.ToLower(m.Charset)
-	m.ExtraHeaders["Location"] = m.Location
+func (m *MockerConfig) MakeHeaders() http.Header {
 
-	return m.ExtraHeaders
+	if m.ExtraHeaders == nil {
+		m.ExtraHeaders = make(map[string]string)
+	}
+
+	if len(m.ContentType) == 0 {
+		m.ContentType = "text/plain"
+	}
+
+	if len(m.Charset) == 0 {
+		m.Charset = "us-ascii"
+	}
+
+	m.ExtraHeaders["Content-Type"] = m.ContentType + "; charset=" + m.Charset
+
+	header := http.Header{}
+	for headerName, headerValue := range m.ExtraHeaders {
+		header.Add(headerName, headerValue)
+	}
+
+	return header
 }
