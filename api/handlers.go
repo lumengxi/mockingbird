@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	log "github.com/Sirupsen/logrus"
 	"github.com/satori/go.uuid"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -29,16 +32,17 @@ func MakeMockerHandler(w http.ResponseWriter, req *http.Request) error {
 
 
 func GetMockerConfigHandler(w http.ResponseWriter, req *http.Request) error {
-	mockerId := req.URL.Query().Get("id")
+	mockerId := req.URL.Query().Get(":id")
 
 	for _, mocker := range mockers {
 		if mocker.ID == mockerId {
-			json.NewEncoder(w).Encode(mocker)
+			return json.NewEncoder(w).Encode(mocker)
 		} else {
 			returnErr := fmt.Errorf("Cannot find requested mockerId: %d", mocker.ID)
 			return StatusError{500, returnErr}
 		}
 	}
+
 	return json.NewEncoder(w).Encode(&Mocker{})
 }
 
@@ -48,7 +52,7 @@ func GetMockerConfigsHandler(w http.ResponseWriter, req *http.Request) error {
 
 
 func SetMockerStatusHandler(w http.ResponseWriter, req *http.Request) error {
-	mockerId := req.URL.Query().Get("id")
+	mockerId := req.URL.Query().Get(":id")
 	mockerStatusParam := req.URL.Query().Get("status")
 
 	targetStatus, err := strconv.ParseBool(mockerStatusParam)
@@ -68,4 +72,35 @@ func SetMockerStatusHandler(w http.ResponseWriter, req *http.Request) error {
 	return json.NewEncoder(w).Encode(&Mocker{})
 }
 
+func makeMockerResponse(mockerConfig MockerConfig) http.Response {
+	resp := http.Response{
+		Header: mockerConfig.MakeHeaders(),
+		StatusCode: mockerConfig.StatusCode,
+		Body: ioutil.NopCloser(bytes.NewBufferString(mockerConfig.Body)),
+	}
 
+	return resp
+}
+
+func GetMockerHandler(w http.ResponseWriter, req *http.Request) error {
+	mockerId := req.URL.Query().Get(":id")
+	resp := http.Response{}
+
+	for _, mocker := range mockers {
+		if mocker.ID == mockerId {
+			resp = makeMockerResponse(mocker.MockerConfig)
+		} else {
+			returnErr := fmt.Errorf("Cannot find mocker by Id: %d", mockerId)
+			return StatusError{500, returnErr}
+		}
+	}
+
+	return resp.Write(w)
+}
+
+func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+
+	io.WriteString(w, `{"alive": true}`)
+}
